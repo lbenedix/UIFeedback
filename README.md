@@ -9,5 +9,4 @@ To install
   	require_once( "$IP/extensions/UIFeedback/UiFeedback.php" );
 
 * create the table in your database
-  	run update.php from maintenance-folder
-  	when that dont work run the table.sql from the extensions folder manualy
+  	run `update.php` from maintenance-folder
