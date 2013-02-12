@@ -3,7 +3,7 @@ UIFeedback
 
 To install
 * download the extension
-  	git clone https://lb42@bitbucket.org/lb42/UIFeedback.git
+  	git clone https://github.com/lbenedix/UIFeedback.git
 
 * add the following to `LocalSettings.php`:
   	require_once( "$IP/extensions/UIFeedback/UiFeedback.php" );
