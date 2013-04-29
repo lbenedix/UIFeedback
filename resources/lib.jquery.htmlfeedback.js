@@ -121,6 +121,7 @@
 	 */
 
 	function distance( element ) {
+		if( element === null ) return 0;
 		var x = (element.position().left + element.width()) - element.position().left;
 		var y = (element.position().top + element.height()) - element.position().top;
 
@@ -178,6 +179,10 @@
 	 * @var object Default plugin options
 	 */
 	HTMLFeedback.defaults = {
+
+
+		sticky: false,
+
 		/**
 		 * @var boolean If true, upload the data as URI instead as a multipart
 		 * file. Default is false if browser has support for BlobBuilder.
@@ -474,6 +479,10 @@
 		} );
 
 		markers.mousedown( function( e ) {
+			if(instance.options.sticky) return;
+
+			//console.log(instance.options.sticky);
+
 			rectangle = $( "<div />" ).css( {
 												"left": e.pageX,
 												"top": e.pageY
@@ -504,6 +513,7 @@
 				if( e.pageY < rectangleTop ) {
 					rectangle.css( "top", e.pageY );
 				}
+
 			} );
 		} );
 
@@ -515,7 +525,6 @@
 				HTMLFeedback.paint( instance );
 			});
 
-
 			// Ignore small rectangles
 			if( distance( self ) < options.minimalDistance ) {
 				remove();
@@ -525,6 +534,7 @@
 					return false;
 				} );
 				//self.click(remove);
+
 				var close = $( '<div class="ui-feedback-close"></div>' );
 				$( close ).css( 'top', '5px' ).css( 'right', '5px' );
 				var actualrect = rectangle;
@@ -532,13 +542,20 @@
 					actualrect.remove();
 					HTMLFeedback.paint( instance );
 				} );
-				rectangle.append( close );
+				if(actualrect.children().size() == 0)
+					actualrect.append( close );
 
 			}
 
 			markers.unbind( "mousemove" );
+			markers.unbind( "mouseout" );
 			HTMLFeedback.paint( instance );
 		} );
+
+
+		markers.mouseover();
+
+
 
 		// Map touch events
 		if( isTouchDevice ) {
@@ -606,6 +623,9 @@
 					break;
 				case "color":
 					instance.options.color = extra;
+					break;
+				case "sticky":
+					instance.options.sticky = extra==='true';
 					break;
 			}
 

@@ -36,8 +36,9 @@ $wgGroupPermissions[ 'UIFeedback_Administator' ][ 'write_uifeedback' ] = true;
 
 // Register modules
 $wgResourceModules[ 'ext.uiFeedback' ] = array(
-	'scripts'       => array( 'resources/ext.uiFeedback.js',
+	'scripts'       => array(
 		'resources/lib.jquery.htmlfeedback.js',
+		'resources/ext.uiFeedback.js',
 		'resources/lib.html2canvas.js',
 		'resources/lib.canvas-to-blob.js',
 	),
@@ -111,6 +112,7 @@ $wgResourceModules[ 'ext.uiFeedback' ] = array(
 		'ui-feedback-highlight-label',
 		'ui-feedback-yellow',
 		'ui-feedback-black',
+		'ui-feedback-sticky',
 
 		'ui-feedback-help-headline',
 		'ui-feedback-help-subheading',
@@ -139,7 +141,8 @@ $wgHooks[ 'BeforePageDisplay' ][ ] = 'uifeedbackBeforePageDisplay';
 function uifeedbackBeforePageDisplay( &$out ) {
 	if( $out->getUser()->isAllowed( 'read_uifeedback' ) ) {
 		$out->addModules( array( 'ext.uiFeedback',
-							  'jquery.ui.draggable' ) );
+							  'jquery.ui.draggable',
+							  'jquery.ui.resizable' ) );
 		return true;
 	}
 	return true;

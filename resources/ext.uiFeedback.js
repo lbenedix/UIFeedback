@@ -28,10 +28,6 @@
 			versionArray_int.push( parseInt(versionArray[i]) );
 		}
 
-//		mw.log(name);
-//		mw.log(versionArray);
-//		mw.log(versionArray_int);
-
 		if( name === 'msie' && versionArray_int[0] >= 10 ) return true;
 		if( name === 'chrome' && versionArray_int[0] >= 20 ) return true;
 		if( name === 'safari' && versionArray_int[0] >= 6 ) return true;
@@ -64,9 +60,13 @@
 
 	/* the feedback button */
 	var button = document.createElement( 'div' );
-	button.className = 'ui-feedback-button';
-	button.innerHTML = '&nbsp;';
-
+	if(use_html2canvas){
+		button.className = 'feedback-button screenshot-button';
+		button.innerHTML = '<span class="icon-camera"></span>&nbsp;'+mw.message( 'ui-feedback-headline' ).escaped()+'&nbsp;';
+	}else{
+		button.className = 'feedback-button questionnaire-button';
+		button.innerHTML = '<span class="icon-edit"></span>&nbsp;'+mw.message( 'ui-feedback-headline' ).escaped()+'&nbsp;';
+	}
 	var feedbackform;
 	var screenshotform;
 	var pre_render_dialogue;
@@ -93,14 +93,15 @@
 							 '<li>' + '<label class="headline" for="ui-feedback-done">' + mw.message( 'ui-feedback-done-label' ).escaped() + '</label>' + '<label><input type="radio" name="ui-feedback-done" id="ui-feedback-done" value="1" >' + mw.message( 'ui-feedback-yes' ).escaped() + '</label>' + '<label><input type="radio" name="ui-feedback-done" value="0" >' + mw.message( 'ui-feedback-no' ).escaped() + '</label>' + '</li>' +
 
 								 /* importance */
-							 '<li>' + '<label class="headline">' + mw.message( 'ui-feedback-importance-label' ).escaped() + '</label>' + '<label><small>' + mw.message( 'ui-feedback-importance-1' ).escaped() + '</small><input type="radio" name="ui-feedback-importance" value="1" >' + '</label>' + '<label><input type="radio" name="ui-feedback-importance" value="2" >' + '</label>' + '<label><input type="radio" name="ui-feedback-importance" value="3" >' + '</label>' + '<label><input type="radio" name="ui-feedback-importance" value="4" >' + '</label>' + '<label><input type="radio" name="ui-feedback-importance" value="5" ><small>' + mw.message( 'ui-feedback-importance-5' ).escaped() + '</small></label>' + '</li>' +
+							 '<li>' + '<label class="headline">' + mw.message( 'ui-feedback-importance-label' ).escaped() + '</label>' + '<label style="margin-left:10px;"><small>' + mw.message( 'ui-feedback-importance-1' ).escaped() + '</small><input type="radio" name="ui-feedback-importance" value="1" >' + '</label>' + '<label><input type="radio" name="ui-feedback-importance" value="2" >' + '</label>' + '<label><input type="radio" name="ui-feedback-importance" value="3" >' + '</label>' + '<label><input type="radio" name="ui-feedback-importance" value="4" >' + '</label>' + '<label><input type="radio" name="ui-feedback-importance" value="5" ><small>' + mw.message( 'ui-feedback-importance-5' ).escaped() + '</small></label>' + '</li>' +
 
 							 '<li><hr id="ui-feedback-hr"></li>' +
 
-							 '<li id="ui-feedback-anonymous-scr-li">' + '<input type="checkbox" id="ui-feedback-anonymous" name="ui-feedback-anonymous" value="true">' + '<label for="ui-feedback-anonymous">' + mw.message( 'ui-feedback-anonym-label' ).escaped() + '</label>' + '<div class="ui-feedback-help-icon-green" title="' + mw.message( 'ui-feedback-anonym-help' ).escaped() + '"></div>' + '</li>' +
+							 '<li id="ui-feedback-anonymous-scr-li">' + '<input type="checkbox" id="ui-feedback-anonymous" name="ui-feedback-anonymous" value="true"><span id="uif-tooltip-anonym" class="uif-tooltip">'+mw.message( 'ui-feedback-anonym-help' ).escaped()+'</span>' + '<label for="ui-feedback-anonymous">' + mw.message( 'ui-feedback-anonym-label' ).escaped() + '</label>' + '<div id="ui-feedback-help-anonym" class="ui-feedback-help-icon-questionnaire"></div>' + '</li>' +
 
-							 '<li id="ui-feedback-notify-li">' + '<input type="checkbox" id="ui-feedback-notify" name="ui-feedback-notify" value="true">' + '<label for="ui-feedback-notify">' + mw.message( 'ui-feedback-notify-label' ).escaped() + '</label>' + '<div class="ui-feedback-help-icon-green" title="' + mw.message( 'ui-feedback-notify-help' ).escaped() + '"></div>' + '</li>' + '</ul>' +
+							 '<li id="ui-feedback-notify-li">' + '<input type="checkbox" id="ui-feedback-notify" name="ui-feedback-notify" value="true"><span id="uif-tooltip-notify" class="uif-tooltip">'+mw.message( 'ui-feedback-notify-help' ).escaped()+'</span>' + '<label for="ui-feedback-notify">' + mw.message( 'ui-feedback-notify-label' ).escaped() + '</label>' + '<div id="ui-feedback-help-notify" class="ui-feedback-help-icon-questionnaire"></div>' + '</li>' +
 
+							 '</ul>' +
 
 							 '<div id="ui-feedback-action-buttons" >' + '<input type="hidden" name="ui-feedback-username" value="' + wgUserName + '">' + '<input type="hidden" name="ui-feedback-useragent" value="' + navigator.userAgent + '">' + '<input type="hidden" name="ui-feedback-type" value="0" >' + '<input type="hidden" name="ui-feedback-url" value="' + mw.html.escape( document.URL ) + '" >' + '<input type="button" name="reset" id="ui-feedback-reset" value="' + mw.message( 'ui-feedback-problem-reset' ).escaped() + '" >' + '&nbsp;<input type="button" name="send" id="ui-feedback-send" value="' + mw.message( 'ui-feedback-problem-send' ).escaped() + '" >' + '</div>' + '</form>' + '</div>'; //end questionnaire-form
 	}else{
@@ -112,21 +113,28 @@
 							   '<li id="ui-feedback-task-li">' + '<label class="headline">' + mw.message( 'ui-feedback-task-label' ).escaped() + '</label>' + '<select name="ui-feedback-task" id="ui-feedback-task">' + '   <option value="">' + mw.message( 'ui-feedback-task-0' ).escaped() + '</option>' + '   <option value="add/edit item">' + mw.message( 'ui-feedback-task-1' ).escaped() + '</option>' + '   <option value="add/edit label">' + mw.message( 'ui-feedback-task-2' ).escaped() + '</option>' + '   <option value="add/edit description">' + mw.message( 'ui-feedback-task-3' ).escaped() + '</option>' + '   <option value="add/edit alias">' + mw.message( 'ui-feedback-task-4' ).escaped() + '</option>' + '   <option value="add/edit links">' + mw.message( 'ui-feedback-task-5' ).escaped() + '</option>' + '   <option value="search">' + mw.message( 'ui-feedback-task-6' ).escaped() + '</option>' + '   <option value="other">' + mw.message( 'ui-feedback-task-7' ).escaped() + '</option>' + '</select>' + '</li>' +
 
 								   /* highlight/blackout */
-							   '<li>' + '<label  class="headline highlight_headline_label">' + mw.message( 'ui-feedback-highlight-label' ).escaped() + '</label>' + '<label id="ui-feedback-highlight-label"><input type="radio" id="ui-feedback-highlight-checkbox" name="marker" value="rgba(225,255,0,0.25)" checked><div class="highlight-button"></div> ' + mw.message( 'ui-feedback-yellow' ).escaped() + '</label>' + '<label id="ui-feedback-blackout-label"><input type="radio" id="ui-feedback-blackout-checkbox" name="marker" value="#000"><div class="blackout-button"></div> ' + mw.message( 'ui-feedback-black' ).escaped() + '</label>' + '</li>' + /* comment */
-							   '<li>' + '<label  class="headline" for="ui-feedback-text3">' + mw.message( 'ui-feedback-comment-label' ).escaped() + '<br>' + '<textarea class="ui-feedback-textarea" id="ui-feedback-text3" name="ui-feedback-text3"  rows="3" cols="8"></textarea></label>' + '</li>' +
+							   '<li>' + '<label  class="headline highlight_headline_label">' + mw.message( 'ui-feedback-highlight-label' ).escaped() + '</label>' +
+								   '<label id="ui-feedback-highlight-label"><input type="radio" id="ui-feedback-highlight-checkbox" name="marker" value="rgba(225,255,0,0.25)" checked><div class="highlight-button"></div> ' + mw.message( 'ui-feedback-yellow' ).escaped() + '</label>' +
+								   '<label id="ui-feedback-blackout-label"><input type="radio" id="ui-feedback-blackout-checkbox" name="marker" value="#000"><div class="blackout-button"></div> ' + mw.message( 'ui-feedback-black' ).escaped() + '</label>' +
+								   '<label id="ui-feedback-sticky-label"><input type="radio" id="ui-feedback-sticky-checkbox" name="marker" value="sticky"><div class="sticky-button"></div> ' + mw.message( 'ui-feedback-sticky' ).escaped() + '</label>' +
+
+								   '</li>' +
+
+								/* comment */
+//								'<li>' + '<label  class="headline" for="ui-feedback-text3">' + mw.message( 'ui-feedback-comment-label' ).escaped() + '<br>' + '<textarea class="ui-feedback-textarea" id="ui-feedback-text3" name="ui-feedback-text3"  rows="3" cols="8"></textarea></label>' + '</li>' +
 
 								   /* done? */
 							   '<li>' + '<label class="headline" for="ui-feedback-done">' + mw.message( 'ui-feedback-done-label' ).escaped() + '</label>' + '<label><input type="radio" name="ui-feedback-done" id="ui-feedback-done" value="1" >' + mw.message( 'ui-feedback-yes' ).escaped() + '</label>' + '<label><input type="radio" name="ui-feedback-done" value="0" >' + mw.message( 'ui-feedback-no' ).escaped() + '</label>' + '</li>' +
 
 								   /* importance */
-							   '<li>' + '<label class="headline">' + mw.message( 'ui-feedback-importance-label' ).escaped() + '</label>' + '<label><small>' + mw.message( 'ui-feedback-importance-1' ).escaped() + '</small><input type="radio" name="ui-feedback-importance" value="1" >' + '</label>' + '<label><input type="radio" name="ui-feedback-importance" value="2" >' + '</label>' + '<label><input type="radio" name="ui-feedback-importance" value="3" >' + '</label>' + '<label><input type="radio" name="ui-feedback-importance" value="4" >' + '</label>' + '<label><input type="radio" name="ui-feedback-importance" value="5" ><small>' + mw.message( 'ui-feedback-importance-5' ).escaped() + '</small></label>' + '</li>' +
+							   '<li>' + '<label class="headline">' + mw.message( 'ui-feedback-importance-label' ).escaped() + '</label>' + '<label style="margin-left:10px;"><small>' + mw.message( 'ui-feedback-importance-1' ).escaped() + '</small><input type="radio" name="ui-feedback-importance" value="1" >' + '</label>' + '<label><input type="radio" name="ui-feedback-importance" value="2" >' + '</label>' + '<label><input type="radio" name="ui-feedback-importance" value="3" >' + '</label>' + '<label><input type="radio" name="ui-feedback-importance" value="4" >' + '</label>' + '<label><input type="radio" name="ui-feedback-importance" value="5" ><small>' + mw.message( 'ui-feedback-importance-5' ).escaped() + '</small></label>' + '</li>' +
 
 
 							   '<li><hr id="ui-feedback-hr"></li>' +
 
-							   '<li id="ui-feedback-anonymous-scr-li">' + '<input type="checkbox" id="ui-feedback-anonymous-scr" name="ui-feedback-anonymous-scr" value="true">' + '<label for="ui-feedback-anonymous-scr">' + mw.message( 'ui-feedback-anonym-label' ).escaped() + '</label>' + '<div class="ui-feedback-help-icon-purple" title="' + mw.message( 'ui-feedback-anonym-help' ).escaped() + '"></div>' + '</li>' +
+							   '<li id="ui-feedback-anonymous-scr-li">' + '<input type="checkbox" id="ui-feedback-anonymous-scr" name="ui-feedback-anonymous-scr" value="true"><span id="uif-tooltip-anonym" class="uif-tooltip">'+mw.message( 'ui-feedback-anonym-help' ).escaped()+'</span>' + '<label for="ui-feedback-anonymous-scr">' + mw.message( 'ui-feedback-anonym-label' ).escaped() + '</label>' + '<div id="ui-feedback-help-anonym" class="ui-feedback-help-icon-screenshot"></div>' + '</li>' +
 
-							   '<li id="ui-feedback-notify-li">' + '<input type="checkbox" id="ui-feedback-notify" name="ui-feedback-notify" value="true">' + '<label for="ui-feedback-notify">' + mw.message( 'ui-feedback-notify-label' ).escaped() + '</label>' + '<div class="ui-feedback-help-icon-purple" title="' + mw.message( 'ui-feedback-notify-help' ).escaped() + '"></div>' + '</li>' +
+								   '<li id="ui-feedback-notify-li">' + '<input type="checkbox" id="ui-feedback-notify" name="ui-feedback-notify" value="true"><span id="uif-tooltip-notify" class="uif-tooltip">'+mw.message( 'ui-feedback-notify-help' ).escaped()+'</span>' + '<label for="ui-feedback-notify">' + mw.message( 'ui-feedback-notify-label' ).escaped() + '</label>' + '<div id="ui-feedback-help-notify" class="ui-feedback-help-icon-screenshot"></div>' + '</li>' +
 
 							   '</ul>' +
 
@@ -152,17 +160,17 @@
 		$( form ).remove();
 		if( use_html2canvas ) {
 			form = screenshotform;
-			$( button ).css( 'height', '119px' );
-			$( button ).css( 'background-position', '-70px 0px' );
-			$( button ).hover(
-
-				function() {
-					$( button ).css( 'background-position', '-105px 0px' );
-				},
-
-				function() {
-					$( button ).css( 'background-position', '-70px 0px' );
-				} );
+//			$( button ).css( 'height', '119px' );
+//			$( button ).css( 'background-position', '-70px 0px' );
+//			$( button ).hover(
+//
+//				function() {
+//					$( button ).css( 'background-position', '-105px 0px' );
+//				},
+//
+//				function() {
+//					$( button ).css( 'background-position', '-70px 0px' );
+//				} );
 			$( form ).find( '.ui-feedback-collapse' ).click( collapseForm );
 			$( form ).find( '.ui-feedback-expand' ).click( expandForm );
 			$( form ).find( '.ui-feedback-expand' ).hide();
@@ -211,11 +219,18 @@
 		$( form ).find( '#ui-feedback-close' ).click( toggleForm );
 		$( form ).find( '#ui-feedback-reset' ).click( resetForm );
 		$( form ).find( '#ui-feedback-send' ).click( sendFeedback );
-		$( form ).find( '.ui-feedback' ).draggable().draggable( "option", "opacity", 0.66 ).draggable( {
-																										   cancel: "#ui-feedback-form"
-																									   } );
+		$( form ).find( '.ui-feedback' ).draggable().draggable( "option", "opacity", 0.66 ).draggable( {cancel: "#ui-feedback-form"} );
 		$( button ).click( toggleForm );
 		$( '.ui-feedback' ).toggle();
+
+		/* tooltip */
+		$( '#ui-feedback-help-anonym' ).hover( function(){ toggleTooltip('#uif-tooltip-anonym'); } );
+		$( '#ui-feedback-help-notify' ).hover( function(){ toggleTooltip('#uif-tooltip-notify'); } );
+		$( '#ui-feedback-help-anonym' ).click( function(){ toggleTooltip('#uif-tooltip-anonym'); } );
+
+//		$( '.ui-feedback-help-button' ).hover( function(){ toggleTooltip('#uif-tooltip-help'); } );
+//		$( '.ui-feedback-close' ).hover( function(){ toggleTooltip('#uif-tooltip-close'); } );
+
 		/*append pre-render dialogue to body*/
 		if( use_html2canvas ) {
 			$( 'body' ).append( pre_render_dialogue );
@@ -230,8 +245,39 @@
 		}
 	}
 
+	function toggleTooltip(id){
+		console.log('toggleTooltip');
+		if( $(id).is(':visible') ) {
+			$(id).css('display','none');
+		} else {
+			$(id).css('display','block');
+		}
+	}
+
 	/* function to show/hide the form */
 	function toggleForm( event ) {
+
+		if( use_html2canvas ){
+			if( $( '.ui-feedback' ).css('display') === 'none' ) {
+				$( '.markers' ).css( 'width', Math.max(document.documentElement["clientWidth"], document.body["scrollWidth"], document.documentElement["scrollWidth"], document.body["offsetWidth"], document.documentElement["offsetWidth"]) );
+				$( '.markers' ).css( 'height', Math.max(document.documentElement["clientHeight"], document.body["scrollHeight"], document.documentElement["scrollHeight"], document.body["offsetHeight"], document.documentElement["offsetHeight"]) );
+				/* show */
+				$( 'body' ).css( '-webkit-touch-callout', 'none' );
+				$( 'body' ).css( '-webkit-user-select', 'none' );
+				$( 'body' ).css( '-khtml-user-select', 'none' );
+				$( 'body' ).css( '-moz-user-select', 'none' );
+				$( 'body' ).css( '-ms-user-select', 'none' );
+				$( 'body' ).css( '-user-select', 'none' );
+			}else{
+				/* hide */
+				$( 'body' ).css( '-webkit-touch-callout', 'all' );
+				$( 'body' ).css( '-webkit-user-select', 'all' );
+				$( 'body' ).css( '-khtml-user-select', 'all' );
+				$( 'body' ).css( '-moz-user-select', 'all' );
+				$( 'body' ).css( '-ms-user-select', 'all' );
+				$( 'body' ).css( '-user-select', 'all' );
+			}
+		}
 
 		mw.log( 'toggle' );
 
@@ -264,7 +310,7 @@
 
 		/*toggle*/
 		$( '.ui-feedback' ).fadeToggle( 'fast' );
-		$( button ).animate( { width: 'toggle' } );
+		$( button ).fadeToggle();
 		$( '.ui-feedback' ).css( 'position', 'absolute' );
 		mw.log( $( '.ui-feedback' ).css( 'position' ) );
 		$( '.ui-feedback' ).animate( {
@@ -273,6 +319,7 @@
 
 		/*if html2canvas is used hide the markes*/
 		if( use_html2canvas ) {
+
 			$( "body" ).htmlfeedback( "toggle" );
 			$( "body" ).htmlfeedback( 'color', $( "input[name='marker']:checked" ).val() );
 
@@ -288,10 +335,12 @@
 					$( '#ui-feedback-username' ).attr( 'value', wgUserName );
 				}
 			} );
+
 		}
 		/*close all help and notify-windows*/
 		$( '.ui-feedback-help' ).remove();
 		$( '.ui-feedback-notification' ).remove();
+
 	}
 
 	/**
@@ -374,6 +423,9 @@
 					break;
 			}
 		} );
+
+
+		$( "body" ).htmlfeedback( 'sticky', 'false' );
 		$( '#ui-feedback-highlight-checkbox' ).attr( 'checked', 'checked' );
 		$( '#ui-feedback-notify' ).prop( "disabled", false );
 		$( '#ui-feedback-anonymous' ).prop( "disabled", false );
@@ -424,7 +476,7 @@
 	 */
 	function show_help() {
 		$( 'body' ).prepend( help );
-		$( help ).fadeIn();
+		$( help ).fadeToggle();
 		var left = $( '.ui-feedback' ).offset().left;
 		var top = $( '.ui-feedback' ).css( 'top' );
 		$( help ).css( 'left', left - 290 );
@@ -481,6 +533,48 @@
 		window.location.href = uri.toString();
 	}
 
+	function addStickyNote(e){
+		console.log('fooooo');
+		$( '.ui-feedback-sticky-note' ).each(
+			function(){
+				if( $( this ).find( 'textarea' ).val() === '' ){ if( $( this ) !== null ) $( this ).remove(); }
+			}
+		);
+
+		var note = $('<div class="ui-feedback-sticky-note"><div class="ui-feedback-sticky-close"></div><textarea placeholder=""></textarea></div>');
+//		$( note ).css('left',e.pageX-50);
+//		$( note ).css('top',e.pageY-25);
+		$( note ).css('left',e.pageX);
+		$( note ).css('top',e.pageY);
+
+
+
+		$( this ).append(note);
+		$( note ).draggable();
+		$( note ).resizable({ handles: "se" });
+
+		$( note ).mousedown(function(){$( "body" ).htmlfeedback( 'sticky', 'true' );});
+		$( note ).mouseup(function(){ if( $( "input[name='marker']:checked" ).val()  !== 'sticky') $( "body" ).htmlfeedback( 'sticky', 'false' );});
+
+
+		$( note ).find( 'textarea' ).focus();
+		$( note ).click(function(e){return false;});
+		$( note ).hover(
+			function(){
+				$( note ).find( ".ui-feedback-sticky-close" ).toggle();
+			}
+		);
+
+		$( note ).find( ".ui-feedback-sticky-close" ).click(
+			function(){
+				$( note ).remove();
+				return false;
+			}
+		);
+
+	}
+
+
 	$( document ).ready( function() {
 
 		/* if on the specialpage add the functions to the button */
@@ -534,7 +628,7 @@
 					mw.log( offset_top );
 					if( $.cookie( "ui-feedback-show-postedit" ) != 'false' ) {
 
-						show_notification( mw.message( 'ui-feedback-notify-postedit' ).escaped(), 5000, color, offset_top );
+						show_notification( mw.message( 'ui-feedback-notify-postedit' ), 5000, color, offset_top );
 
 						$.data( this, 'timer', setTimeout( function() {
 							$( '.ui-feedback-notification' ).animate( {
@@ -574,14 +668,14 @@
 			$( "body" ).htmlfeedback( {
 										  onShow: function() {
 											  $( "#htmlfeedback-close" ).show();
-											  $( 'body' ).css( 'cursor', 'crosshair' );
+											  $( '.markers' ).css( 'cursor', 'crosshair' );
 											  $( '.ui-feedback' ).css( 'cursor', 'auto' );
 											  // $('#p-personal').hide();
 											  $( 'body' ).addClass( 'noselect' );
 										  },
 										  onHide: function() {
 											  $( "#htmlfeedback-close" ).hide();
-											  $( 'body' ).css( 'cursor', 'auto' );
+											  $( '.markers' ).css( 'cursor', 'auto' );
 											  $( '#p-personal' ).show();
 											  $( 'body' ).addClass( 'noselect' );
 
@@ -591,7 +685,7 @@
 											  // $('#p-personal').hide();
 											  $( ".ui-feedback" ).hide();
 											  $( '.ui-feedback-help' ).remove();
-											  $( 'body' ).css( 'cursor', 'wait' );
+											  $( '.markers' ).css( 'cursor', 'wait' );
 
 										  },
 										  onPostRender: function( canvas ) {
@@ -615,7 +709,7 @@
 																	"ui-feedback-done": $( 'input[name=ui-feedback-done]:checked' ).val(),
 																	"ui-feedback-importance": $( 'input[name=ui-feedback-importance]:checked' ).val()
 																} ).done(function( data ) { /* if the textfeedback was sent */
-																			 $( 'body' ).css( 'cursor', 'auto' );
+																			 $( '.markers' ).css( 'cursor', 'auto' );
 																			 /* sending the screenshot to the upload-api  */
 																			 var filename = 'UIFeedback_screenshot_' + data.uifeedback.id + '.png';
 																			 mw.log( 'API result:', data );
@@ -635,7 +729,9 @@
 																			 formData.append( 'format', 'json' );
 																			 formData.append( 'token', mw.user.tokens.get( 'editToken' ) );
 																			 formData.append( 'filename', filename );
+																			 formData.append( 'ignorewarnings', 1 );
 																			 formData.append( 'file', canvasBytes );
+
 																			 xhr.open( "POST", wgServer + wgScriptPath + '/api.php', true );
 																			 xhr.send( formData );
 																			 show_notification( mw.message( 'ui-feedback-notify-upload-progress' ), 5000, 'purple' );
@@ -654,6 +750,8 @@
 											  $( "body" ).htmlfeedback( "toggle" );
 											  $( 'canvas' ).css( 'width', '0px' ).css( 'height', '0px' );
 											  $( '.markers' ).hide();
+											  $( "body" ).htmlfeedback( 'sticky', 'false' );
+											  $( '.ui-feedback-sticky-note' ).remove();
 											  $( '.htmlfeedback-rect' ).remove();
 
 											  $( 'body' ).addClass( 'noselect' );
@@ -673,12 +771,13 @@
 				$( '#p-personal' ).show();
 				$( 'canvas' ).hide();
 				$( '.markers' ).hide();
-				$( 'body' ).css( 'cursor', 'auto' );
+				$( '.markers' ).css( 'cursor', 'auto' );
 			} );
 
 			// Reset HTMLFeedback when we reset the form
 			$( "#ui-feedback-reset" ).click( function() {
 				$( '.htmlfeedback-rect' ).remove();
+				$( '.ui-feedback-sticky-note' ).remove();
 			} );
 
 			// Upload sreenshot and comment to the server
@@ -691,11 +790,22 @@
 			} );
 
 			// Change marker color
-			$( "input[name='marker']" ).change( function() {
-				$( "body" ).htmlfeedback( 'color', $( "input[name='marker']:checked" ).val() );
+			$( "input[name='marker']" ).change( function(event) {
+				if( $( "input[name='marker']:checked" ).val()  === 'sticky' ){
+					$( "body" ).htmlfeedback( 'sticky', 'true' );
+					$( '.markers' )[0].addEventListener( 'click', addStickyNote, false );
+					$( '.markers' ).css('cursor', 'pointer');
+				}else{
+					$( "body" ).htmlfeedback( 'sticky', 'false' );
+					$( '.markers' )[0].removeEventListener( 'click', addStickyNote, false );
+					$( '.markers' ).css('cursor', 'crosshair');
+					$( "body" ).htmlfeedback( 'color', $( "input[name='marker']:checked" ).val() );
+				}
 			} );
 			/*HTMLFeedback END*/
 		}
 	} );
+
+
 
 }( mediaWiki, jQuery ));

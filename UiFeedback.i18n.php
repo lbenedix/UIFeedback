@@ -21,14 +21,14 @@ $messages[ 'en' ] = array(
 	'ui-feedback-headline'                      => 'Feedback',
 	'ui-feedback-scr-headline'                  => 'Feedback',
 
-	'ui-feedback-task-label'                    => 'I wanted to:',
+	'ui-feedback-task-label'                    => 'What did you want to do?',
 	'ui-feedback-task-0'                        => 'please select', // item
 	'ui-feedback-task-1'                        => 'add/edit an item', // item
 	'ui-feedback-task-2'                        => 'add/edit a label', // label
 	'ui-feedback-task-3'                        => 'add/edit a description', // description
 	'ui-feedback-task-4'                        => 'add/edit an alias', // alias
 	'ui-feedback-task-5'                        => 'add/edit links', // links
-	'ui-feedback-task-6'                        => 'search', // search
+	'ui-feedback-task-6'                        => 'add/edit statements', // statements
 	'ui-feedback-task-7'                        => 'other:', // other
 
 	'ui-feedback-done-label'                    => 'Were you able to complete your task?',
@@ -44,14 +44,14 @@ $messages[ 'en' ] = array(
 	'ui-feedback-happened-4'                    => 'Something else',
 
 
-	'ui-feedback-importance-label'              => 'How important is it for you:',
+	'ui-feedback-importance-label'              => 'How important is it for you?',
 	'ui-feedback-importance-1'                  => 'not important',
 	'ui-feedback-importance-5'                  => 'very important',
 
 	'ui-feedback-anonym-label'                  => 'I want to post it privately.',
 	'ui-feedback-anonym-help'                   => 'Check this box if you don\'t want to share your username. Please note that we will not be able to keep you updated on your submitted issue if you choose to remain anonymous.',
 	'ui-feedback-notify-label'                  => 'I want to be updated on this issue.',
-	'ui-feedback-notify-help'                   => 'We will leave you a note on your userpage when we work on your issue.',
+	'ui-feedback-notify-help'                   => 'Check this box if you want us to leave you a note on your userpage when we work on your issue.',
 
 	'ui-feedback-notify-sent'                   => 'Feedback sent <br/><br/><small>See <a href="$1">Feedback-Table</a></small>',
 	'ui-feedback-notify-postedit'               => 'Please consider sharing your feedback with the developers.</br></br><small id="ui-feedback-show-postedit"><a href="#" >Don\'t ask again</a></small>',
@@ -71,6 +71,7 @@ $messages[ 'en' ] = array(
 
 	'ui-feedback-yellow'                        => 'Highlight areas that are relevant.',
 	'ui-feedback-black'                         => 'Blackout any personal information.',
+	'ui-feedback-sticky'                        => 'Sticky notes for annotations.',
 
 	'ui-feedback-help-headline'                 => 'What to report:',
 	'ui-feedback-help-subheading'               => 'How to Use:',
@@ -189,7 +190,7 @@ $messages[ 'qqq' ] = array(
 	'ui-feedback-happened-4'                    => 'Something else',
 
 
-	'ui-feedback-importance-label'              => 'How important is it for you:',
+	'ui-feedback-importance-label'              => 'How important is it for you?',
 	'ui-feedback-importance-1'                  => 'not important',
 	'ui-feedback-importance-5'                  => 'very important',
 
